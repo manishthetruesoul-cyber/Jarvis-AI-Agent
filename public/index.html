@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#020b17">
+  <title>J.A.R.V.I.S. — Advanced AI Neural Interface</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="vendor/katex.min.css">
+  <link rel="stylesheet" href="style.css?v=28.0">
+</head>
+<body>
+  <!-- Background Canvas for Holographic Starfield / Particle Energy Grid -->
+  <canvas id="bgCanvas"></canvas>
+  
+  <!-- CRT Scanline & HUD Overlay Effects -->
+  <div class="hud-scanlines"></div>
+  <div class="hud-vignette"></div>
+
+  <!-- Main System Container -->
+  <div class="jarvis-container">
+    
+    <!-- TOP HUD HEADER -->
+    <header class="hud-header">
+      <div class="header-left">
+        <div class="stark-logo">
+          <svg class="stark-crest-svg" viewBox="0 0 100 100" width="36" height="36">
+            <polygon points="50,5 95,25 95,75 50,95 5,75 5,25" fill="none" stroke="#00f0ff" stroke-width="2.5" />
+            <circle cx="50" cy="50" r="28" fill="none" stroke="#ffb703" stroke-width="2" stroke-dasharray="4 2" />
+            <polygon points="50,22 74,68 26,68" fill="none" stroke="#00f0ff" stroke-width="2" />
+            <circle cx="50" cy="50" r="8" fill="#00f0ff" />
+          </svg>
+          <div class="stark-title-block">
+            <div class="stark-brand">ADVANCED INTELLIGENCE <span class="tag-os">v4.5</span></div>
+            <h1 class="stark-title">J.A.R.V.I.S. <span class="sub-title">// QUANTUM NEURAL SYSTEM</span></h1>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-center">
+        <!-- Live System Telemetry Badges -->
+        <div class="telemetry-pill">
+          <span class="telemetry-label">SYSTEM</span>
+          <span class="telemetry-value active-pulse" id="hudSystemStatus">ONLINE</span>
+        </div>
+        <div class="telemetry-pill">
+          <span class="telemetry-label">CORE AI</span>
+          <span class="telemetry-value text-gold" id="hudModelTag">J.A.R.V.I.S. QUANTUM CORE</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <!-- Audio & Speech Controls -->
+        <button id="btnVoiceToggle" class="hud-btn hud-btn-icon active" title="Toggle Jarvis Voice Output (Text-to-Speech)">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <span class="btn-text">VOICE</span>
+        </button>
+
+        <button id="btnSfxToggle" class="hud-btn hud-btn-icon active" title="Toggle HUD Sound Effects">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18V5l12-2v13"></path>
+            <circle cx="6" cy="18" r="3"></circle>
+            <circle cx="18" cy="16" r="3"></circle>
+          </svg>
+          <span class="btn-text">SFX</span>
+        </button>
+
+        <button id="btnToggleSessions" class="hud-btn hud-btn-icon" title="Conversation Sessions & History Drawer">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span class="btn-text">SESSIONS</span>
+          <span class="session-counter-badge" id="sessionCountBadge">1</span>
+        </button>
+
+        <button id="btnToggleMemory" class="hud-btn hud-btn-icon" title="Long-Term Neural Memory Matrix (Persists across all chats)">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a5 5 0 0 0-5 5v1a4 4 0 0 0-2 3.5c0 1.5.8 2.8 2 3.5V17a5 5 0 0 0 10 0v-2c1.2-.7 2-2 2-3.5 0-1.6-.9-3-2-3.5V7a5 5 0 0 0-5-5z"></path>
+            <path d="M9 10h6"></path>
+            <path d="M9 14h6"></path>
+          </svg>
+          <span class="btn-text">MEMORY</span>
+          <span class="session-counter-badge" id="memoryCountBadge">0</span>
+        </button>
+
+        <button id="btnToggleHologram" class="hud-btn hud-btn-icon" title="Toggle Fullscreen Cinema Hologram Mode (Alt+F)">
+          <svg class="icon-expand" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <polyline points="9 21 3 21 3 15"></polyline>
+            <line x1="21" y1="3" x2="14" y2="10"></line>
+            <line x1="3" y1="21" x2="10" y2="14"></line>
+          </svg>
+          <svg class="icon-compress" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+            <polyline points="4 14 10 14 10 20"></polyline>
+            <polyline points="20 10 14 10 14 4"></polyline>
+            <line x1="14" y1="10" x2="21" y2="3"></line>
+            <line x1="10" y1="14" x2="3" y2="21"></line>
+          </svg>
+          <span class="btn-text">HOLOGRAM</span>
+        </button>
+
+        <button id="btnSettings" class="hud-btn hud-btn-icon" title="Settings & API Configuration">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span class="btn-text">SETTINGS</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN HUD WORKSPACE -->
+    <main class="hud-main">
+      
+      <!-- LEFT SIDEBAR: CORE VISUALIZER & PROTOCOLS -->
+      <aside class="hud-sidebar hud-sidebar-left">
+        <!-- Holographic Core Visualizer -->
+        <div class="hud-card arc-card">
+          <div class="card-header">
+            <span class="card-title">AI NEURAL CORE</span>
+            <span class="card-badge" id="reactorPwrBadge">ACTIVE</span>
+          </div>
+          <div class="arc-canvas-wrapper" id="arcReactorInteractive">
+            <canvas id="arcCanvas" width="220" height="220"></canvas>
+            <div class="arc-core-pulse"></div>
+            <div class="arc-click-hint">CLICK TO PULSE CORE</div>
+          </div>
+          <div class="arc-metrics">
+            <div class="metric-row">
+              <span class="m-label">ENGINE STATE:</span>
+              <span class="m-val text-cyan">OPTIMAL</span>
+            </div>
+            <div class="metric-row">
+              <span class="m-label">NEURAL LOAD:</span>
+              <span class="m-val" id="coreLoad">12.4%</span>
+            </div>
+            <div class="metric-row">
+              <span class="m-label">PRECISION:</span>
+              <span class="m-val text-gold">FP16 / INT8</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Practical Assistant Capabilities / Quick Actions -->
+        <div class="hud-card protocols-card">
+          <div class="card-header">
+            <span class="card-title">ASSISTANT PROTOCOLS</span>
+            <span class="card-badge">ACTIONS</span>
+          </div>
+          <div class="protocols-list">
+            <button class="protocol-btn" data-prompt="Jarvis, review and optimize this solution for maximum performance, clean architecture, and best practices.">
+              <span class="p-icon">💻</span>
+              <span class="p-text">Code Architecture</span>
+            </button>
+            <button class="protocol-btn" data-prompt="Jarvis, perform a deep step-by-step first-principles analysis of this problem, evaluating assumptions and tradeoffs.">
+              <span class="p-icon">🧠</span>
+              <span class="p-text">First-Principles Logic</span>
+            </button>
+            <button class="protocol-btn" data-prompt="Jarvis, explain this complex technical topic with intuitive analogies and clear examples.">
+              <span class="p-icon">💡</span>
+              <span class="p-text">Concept Explainer</span>
+            </button>
+            <button class="protocol-btn" data-prompt="Jarvis, draft a comprehensive, highly articulate executive memorandum summarizing key findings and action items.">
+              <span class="p-icon">📋</span>
+              <span class="p-text">Executive Memo</span>
+            </button>
+            <button class="protocol-btn" data-prompt="Jarvis, provide a rigorous mathematical and statistical breakdown of this problem.">
+              <span class="p-icon">📊</span>
+              <span class="p-text">Math & Statistics</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- World Clocks Telemetry -->
+        <div class="hud-card clocks-card hide-mobile">
+          <div class="card-header">
+            <span class="card-title">GLOBAL TIMEZONES</span>
+            <span class="card-badge">UTC SYNC</span>
+          </div>
+          <div class="world-clocks-grid">
+            <div class="clock-item">
+              <span class="c-city">SAN FRANCISCO (PST)</span>
+              <span class="c-time" id="clockMalibu">--:--:--</span>
+            </div>
+            <div class="clock-item">
+              <span class="c-city">NEW YORK (EST)</span>
+              <span class="c-time" id="clockNY">--:--:--</span>
+            </div>
+            <div class="clock-item">
+              <span class="c-city">LONDON (GMT)</span>
+              <span class="c-time" id="clockLondon">--:--:--</span>
+            </div>
+            <div class="clock-item">
+              <span class="c-city">TOKYO (JST)</span>
+              <span class="c-time" id="clockTokyo">--:--:--</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- CENTER HUD: CONVERSATION STREAM & INPUT -->
+      <section class="hud-center">
+        <!-- Holographic Console Container -->
+        <div class="chat-hud-window">
+          
+          <!-- Holographic Window Bar -->
+          <div class="chat-header-bar">
+            <div class="chat-status-left">
+              <span class="hud-bracket">[</span>
+              <span class="hud-dot"></span>
+              <span class="chat-feed-title">INTELLIGENCE COMMUNICATIONS CONSOLE // ACTIVE</span>
+              <span class="hud-bracket">]</span>
+            </div>
+
+            <!-- Voice Speaking Visualizer Waveform -->
+            <div class="speech-visualizer" id="speechVisualizer">
+              <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+              <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+              <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+              <span class="speech-status-label">SPEECH SYNTHESIS ACTIVE</span>
+            </div>
+
+            <div class="chat-actions-right">
+              <button id="btnClearChat" class="hud-mini-btn" title="Clear Console History">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                <span>PURGE</span>
+              </button>
+              <button id="btnExportChat" class="hud-mini-btn" title="Export Markdown Transcript (.md)">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>EXPORT MD</span>
+              </button>
+              <button id="btnExportPdf" class="hud-mini-btn btn-export-pdf" title="Export High-Fidelity PDF Dossier (.pdf)">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                <span>EXPORT PDF</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Message History Container -->
+          <div class="messages-container" id="messagesContainer">
+            <!-- Initial Welcome Transmission -->
+            <div class="message-wrapper jarvis-message" id="welcomeTransmission">
+              <div class="message-hud-tag">
+                <span class="tag-sender">J.A.R.V.I.S.</span>
+                <span class="tag-time">SYSTEM ONLINE</span>
+              </div>
+              <div class="message-bubble">
+                <div class="message-content">
+                  <p><strong>Good day.</strong> All neural subroutines are online, calibrated, and standing by.</p>
+                  <p>I am fully equipped to solve complex programming tasks, perform deep logical reasoning, construct clean architectures, analyze mathematics, or assist with any question you have.</p>
+                  <p>How may I assist you today, Sir?</p>
+                  <div class="quick-chips">
+                    <button class="chip" data-prompt="What are your core technical capabilities, Jarvis?">Overview of Capabilities</button>
+                    <button class="chip" data-prompt="Write an optimized, production-ready Python script for high-throughput async API streaming.">Write Python Code</button>
+                    <button class="chip" data-prompt="Explain the core differences between transformer attention mechanisms and state space models.">Explain AI Architectures</button>
+                    <button class="chip" data-prompt="Solve this logic puzzle and provide your step-by-step deductive reasoning.">Logic & Reasoning</button>
+                  </div>
+                </div>
+              </div>
+              <div class="message-footer-hud">
+                <button class="msg-action-btn speak-btn" title="Speak this response aloud">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                  </svg>
+                  <span>SPEAK</span>
+                </button>
+                <button class="msg-action-btn copy-btn" title="Copy message text">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  <span>COPY</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Thinking / Processing Indicator -->
+          <div class="thinking-hud" id="thinkingIndicator" style="display: none;">
+            <div class="hud-spinner">
+              <div class="spin-ring"></div>
+              <div class="spin-core"></div>
+            </div>
+            <div class="thinking-text-group">
+              <span class="thinking-title">NEURAL CORE PROCESSING</span>
+              <span class="thinking-sub" id="thinkingSubText">Synthesizing intelligence response...</span>
+            </div>
+          </div>
+
+          <!-- INPUT CONSOLE -->
+          <div class="hud-input-panel">
+            
+            <!-- Mode Badges Selector -->
+            <div class="input-mode-bar">
+              <span class="mode-bar-label">ASSISTANT MODE:</span>
+              <div class="mode-pills">
+                <button class="mode-pill active" data-mode="standard">⚡ GENERAL AI</button>
+                <button class="mode-pill" data-mode="concise" title="Direct, ultra low-token answers without extra fluff">🎯 CONCISE / LOW-TOKEN</button>
+                <button class="mode-pill" data-mode="reasoning">🧠 DEEP REASONING</button>
+                <button class="mode-pill" data-mode="coder">💻 CODE ARCHITECT</button>
+                <button class="mode-pill" data-mode="analysis">📊 RESEARCH & ANALYSIS</button>
+              </div>
+            </div>
+
+            <!-- Attached File Indicator Badge -->
+            <div class="attached-file-badge" id="attachedFileBadge" style="display: none;">
+              <div class="file-badge-info">
+                <img id="attachedFileThumb" class="file-badge-thumb" style="display: none;" alt="Preview">
+                <span class="file-badge-icon" id="attachedFileIcon">📎</span>
+                <span class="file-badge-name" id="attachedFileName">code.py</span>
+                <span class="file-badge-size" id="attachedFileSize">4.2 KB</span>
+                <span class="file-badge-status" id="attachedFileStatus">READY FOR ANALYSIS</span>
+              </div>
+              <button type="button" class="btn-remove-file" id="btnRemoveFile" title="Detach file">&times;</button>
+            </div>
+
+            <!-- Text & Audio Input Box -->
+            <div class="input-wrapper">
+              <div class="input-frame-corners"></div>
+              
+              <!-- File Attachment Button -->
+              <button type="button" id="btnAttachFile" class="btn-attach" title="Attach Image, Code or Document (PNG, JPG, Python, JS, PDF, etc.)">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                </svg>
+              </button>
+              <input type="file" id="fileInput" style="display: none;" accept="image/*,.png,.jpg,.jpeg,.gif,.webp,.bmp,.svg,.pdf,.docx,.doc,.py,.js,.ts,.jsx,.tsx,.html,.css,.json,.csv,.txt,.md,.c,.cpp,.h,.rs,.go,.java,.sh,.yaml,.yml,.xml,.sql,.env,.log">
+
+              <!-- Voice Recognition Microphone Button -->
+              <button id="btnVoiceInput" class="btn-mic" title="Voice Input / Speak to Jarvis">
+                <div class="mic-pulse"></div>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                  <line x1="12" y1="19" x2="12" y2="23"></line>
+                  <line x1="8" y1="23" x2="16" y2="23"></line>
+                </svg>
+              </button>
+
+              <textarea 
+                id="promptInput" 
+                placeholder="Ask Jarvis any question or speak your query..." 
+                rows="1"
+                autofocus></textarea>
+
+              <!-- Stop / Abort button when streaming -->
+              <button id="btnStopStream" class="hud-btn-stop" style="display: none;" title="Abort Stream">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                  <rect x="6" y="6" width="12" height="12"></rect>
+                </svg>
+              </button>
+
+              <!-- Send Button -->
+              <button id="btnSend" class="btn-send" title="Send Query (Enter)">
+                <span class="send-glow"></span>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+                <span class="send-label">TRANSMIT</span>
+              </button>
+            </div>
+
+            <!-- Listening Feedback Banner -->
+            <div class="voice-listening-banner" id="voiceBanner" style="display: none;">
+              <span class="v-pulse-dot"></span>
+              <span class="v-text">J.A.R.V.I.S. is listening... Speak now.</span>
+              <button id="btnCancelVoice" class="v-cancel">CANCEL</button>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- RIGHT SIDEBAR: AI CAPABILITIES & PERFORMANCE SPECS -->
+      <aside class="hud-sidebar hud-sidebar-right hide-mobile">
+        <!-- Capabilities HUD Card -->
+        <div class="hud-card capabilities-card">
+          <div class="card-header">
+            <span class="card-title">AI CAPABILITIES</span>
+            <span class="card-badge text-gold">ACTIVE</span>
+          </div>
+          
+          <div class="capabilities-list">
+            <div class="cap-item">
+              <div class="cap-header">
+                <span class="cap-name">⚡ NATURAL LANGUAGE & REASONING</span>
+                <span class="cap-status text-cyan">ONLINE</span>
+              </div>
+              <p class="cap-desc">Advanced multi-step reasoning, contextual memory, and intelligent synthesis.</p>
+            </div>
+
+            <div class="cap-item">
+              <div class="cap-header">
+                <span class="cap-name">💻 FULL-STACK CODE GENERATION</span>
+                <span class="cap-status text-cyan">ONLINE</span>
+              </div>
+              <p class="cap-desc">Python, TypeScript, C++, Rust, Go, SQL, Web architecture, and debugging.</p>
+            </div>
+
+            <div class="cap-item">
+              <div class="cap-header">
+                <span class="cap-name">📊 DATA & QUANTITATIVE MATH</span>
+                <span class="cap-status text-gold">CALIBRATED</span>
+              </div>
+              <p class="cap-desc">Complex equations, algorithm complexity analysis, and statistical modeling.</p>
+            </div>
+
+            <div class="cap-item">
+              <div class="cap-header">
+                <span class="cap-name">🎙️ REAL-TIME VOICE SYNTHESIS</span>
+                <span class="cap-status text-cyan">ACTIVE</span>
+              </div>
+              <p class="cap-desc">Natural speech synthesis with British persona and microphone speech-to-text.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance Telemetry Card -->
+        <div class="hud-card telemetry-card">
+          <div class="card-header">
+            <span class="card-title">SYSTEM TELEMETRY</span>
+            <span class="card-badge">LIVE BUS</span>
+          </div>
+          <div class="neural-specs">
+            <div class="spec-row">
+              <span class="s-label">NEURAL MATRIX:</span>
+              <span class="s-val text-gold" id="telemetryModelName">QUANTUM INTELLIGENCE</span>
+            </div>
+            <div class="spec-row">
+              <span class="s-label">ENGINE STATUS:</span>
+              <span class="s-val text-cyan" id="telemetryProviderName">SYNCHRONIZED</span>
+            </div>
+            <div class="spec-row">
+              <span class="s-label">ROUNDTRIP LATENCY:</span>
+              <span class="s-val text-cyan" id="telemetryPing">18 ms</span>
+            </div>
+            <div class="spec-row">
+              <span class="s-label">CONTEXT WINDOW:</span>
+              <span class="s-val">131,072 Tokens</span>
+            </div>
+            <div class="spec-row">
+              <span class="s-label">SESSION UPTIME:</span>
+              <span class="s-val" id="telemetryUptime">--</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Token Allocation & Quota Card -->
+        <div class="hud-card token-card">
+          <div class="card-header">
+            <span class="card-title">API TOKEN QUOTA</span>
+            <span class="card-badge text-gold" id="tokenHealthBadge">OPTIMAL</span>
+          </div>
+          <div class="neural-specs">
+            <div class="spec-row">
+              <span class="s-label">REMAINING TOKENS:</span>
+              <span class="s-val text-gold" id="sbTokensRemaining">1,000,000</span>
+            </div>
+            <div class="spec-row">
+              <span class="s-label">SESSION TOKENS USED:</span>
+              <span class="s-val text-cyan" id="sbTokensUsed">0</span>
+            </div>
+            <div class="spec-row">
+              <span class="s-label">LAST INFERENCE:</span>
+              <span class="s-val" id="sbTokensLast">--</span>
+            </div>
+            <div class="spec-row">
+              <span class="s-label">CONTEXT USED:</span>
+              <span class="s-val" id="sbContextWindow">0 / 131,072</span>
+            </div>
+          </div>
+          <div class="token-fuel-bar">
+            <div class="fuel-track">
+              <div class="fuel-fill" id="tokenFuelFill" style="width: 100%;"></div>
+            </div>
+            <div class="fuel-labels">
+              <span id="tokenPercentRemaining">100% QUOTA AVAILABLE</span>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+
+    </main>
+
+    <!-- FOOTER HUD BAR -->
+    <footer class="hud-footer">
+      <div class="footer-left">
+        <span class="f-item">J.A.R.V.I.S. INTELLIGENCE PLATFORM</span>
+        <span class="f-sep">|</span>
+        <span class="f-item">ENCRYPTION: 4096-BIT QUANTUM CHANNEL</span>
+      </div>
+      <div class="footer-center">
+        <span class="f-pulse-dot"></span>
+        <span>READY FOR QUERIES</span>
+      </div>
+      <div class="footer-right">
+        <span class="f-item">J.A.R.V.I.S. QUANTUM NEURAL SYSTEM // SECURE INTERFACE</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- MULTI-SESSION CONVERSATION DRAWER -->
+  <div class="sessions-drawer" id="sessionsDrawer">
+    <div class="drawer-header">
+      <div class="drawer-title-group">
+        <span class="drawer-icon">🗂️</span>
+        <h3>MISSION ARCHIVES // SESSIONS</h3>
+      </div>
+      <button class="drawer-close-btn" id="btnCloseDrawer" title="Close Drawer">&times;</button>
+    </div>
+
+    <div class="drawer-toolbar">
+      <button class="btn-new-session" id="btnDrawerNewSession" title="Start a fresh conversation session">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        <span>+ NEW SESSION</span>
+      </button>
+    </div>
+
+    <div class="drawer-search">
+      <input type="text" id="inputSearchSessions" class="hud-input drawer-search-input" placeholder="Search sessions...">
+    </div>
+
+    <div class="sessions-list" id="sessionsList">
+      <!-- Populated dynamically via JS -->
+    </div>
+
+    <div class="drawer-footer">
+      <button class="btn-purge-all" id="btnPurgeAllSessions" title="Purge all saved sessions">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        </svg>
+        <span>PURGE ALL SESSIONS</span>
+      </button>
+    </div>
+  </div>
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+  <!-- SETTINGS MODAL -->
+  <div class="hud-modal" id="settingsModal" style="display: none;">
+    <div class="modal-backdrop"></div>
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-icon">⚙️</span>
+          <h2>J.A.R.V.I.S. CONFIGURATION & AI PROVIDERS</h2>
+        </div>
+        <button class="modal-close-btn" id="btnCloseSettings">&times;</button>
+      </div>
+      <div class="modal-body">
+        
+        <div class="settings-group">
+          <label class="settings-label" for="selectProvider">AI ENGINE PROFILE</label>
+          <select id="selectProvider" class="hud-input">
+            <option value="cerebras">Cerebras Wafer-Scale Ultra-Speed Engine (2,000+ tok/s - Default)</option>
+            <option value="nvidia">NVIDIA Deep Quantum Engine & Vision</option>
+            <option value="kie">Secondary Neural Gateway</option>
+          </select>
+        </div>
+
+        <div class="settings-group">
+          <label class="settings-label" for="inputApiKey">API ACCESS KEY (PROTECTED)</label>
+          <div class="key-input-row">
+            <input type="password" id="inputApiKey" class="hud-input" placeholder="••••••••••••••••••••••••••••••••••••" />
+            <button class="hud-btn hud-btn-primary" id="btnTestKey">TEST CONNECTION</button>
+          </div>
+          <span class="settings-hint">API access key is encrypted and stored securely in local browser memory.</span>
+          <div id="keyTestResult" class="test-result-box" style="display: none;"></div>
+        </div>
+
+        <div class="settings-group">
+          <label class="settings-label" for="inputTokenQuota">API TOKEN QUOTA TRACKER</label>
+          <div class="key-input-row">
+            <input type="number" id="inputTokenQuota" class="hud-input" placeholder="e.g. 1000000" />
+            <button class="hud-btn" id="btnResetQuota">RESET TO 1M</button>
+          </div>
+          <span class="settings-hint">Tracks remaining free credits/tokens (~1,000 credits = ~1M tokens) to help you monitor usage.</span>
+        </div>
+
+        <div class="settings-group">
+          <label class="settings-label" for="selectVoice">JARVIS VOICE SYNTHESIS PROFILE</label>
+          <select id="selectVoice" class="hud-input">
+            <option value="">Detecting available speech voices...</option>
+          </select>
+          <div class="voice-sliders">
+            <div class="slider-item">
+              <label>Voice Pitch: <span id="valPitch">1.00</span></label>
+              <input type="range" id="sliderPitch" min="0.5" max="1.5" step="0.05" value="1.00">
+            </div>
+            <div class="slider-item">
+              <label>Voice Rate: <span id="valRate">1.35</span></label>
+              <input type="range" id="sliderRate" min="0.7" max="2.0" step="0.05" value="1.35">
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <label class="settings-label" for="customPersona">SYSTEM DIRECTIVE (ASSISTANT PERSONA)</label>
+          <textarea id="customPersona" class="hud-input" rows="4"></textarea>
+          <button class="hud-mini-btn" id="btnResetPersona" style="margin-top: 6px;">RESTORE DEFAULT JARVIS DIRECTIVE</button>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="hud-btn" id="btnCancelSettings">CANCEL</button>
+        <button class="hud-btn hud-btn-primary" id="btnSaveSettings">SAVE CONFIGURATION</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEURAL MEMORY MATRIX MODAL -->
+  <div class="hud-modal" id="memoryModal" style="display: none;">
+    <div class="modal-backdrop" id="memoryModalBackdrop"></div>
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-icon">🧠</span>
+          <h2>LONG-TERM NEURAL MEMORY MATRIX</h2>
+        </div>
+        <button class="modal-close-btn" id="btnCloseMemoryModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="memory-status-banner">
+          <span class="memory-status-icon">🔒</span>
+          <div>
+            <strong style="color: var(--hud-cyan);">PERMANENT CORE STORAGE ACTIVE</strong>
+            <div style="font-size: 11px; margin-top: 3px; color: var(--hud-text-secondary);">
+              These facts and preferences persist permanently across all conversations, reboots, and chat purges. Jarvis recalls this memory in every new session.
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <label class="settings-label">STORED MEMORIES (<span id="memoryCountText">0</span>)</label>
+          <div id="memoryItemsList" class="memory-items-list">
+            <!-- Dynamically populated memory cards -->
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <label class="settings-label" for="inputNewMemory">ADD MANUAL MEMORY ITEM</label>
+          <div class="memory-add-row">
+            <input type="text" id="inputNewMemory" class="hud-input" placeholder="e.g. User prefers concise answers, working on Project Stark..." />
+            <button class="hud-btn hud-btn-primary" id="btnAddMemoryManual">+ STORE</button>
+          </div>
+          <span class="settings-hint">Tip: You can also simply tell Jarvis in chat: "Remember that...", "Keep in mind that...", or "Update memory: ...".</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="hud-btn hud-btn-danger" id="btnPurgeAllMemory">PURGE ALL MEMORY</button>
+        <button class="hud-btn hud-btn-primary" id="btnCloseMemory">DONE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING EXIT HOLOGRAM PILL (Only visible in Fullscreen Hologram Mode) -->
+  <button id="btnExitHologramFloating" class="floating-exit-hologram" title="Exit Fullscreen Hologram Mode (Esc or Alt+F)">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="18" y1="6" x2="6" y2="18"></line>
+      <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+    <span>EXIT HOLOGRAM (ESC)</span>
+  </button>
+
+  <!-- Scripts with cache busters -->
+  <script src="vendor/katex.min.js"></script>
+  <script src="vendor/jszip.min.js"></script>
+  <script src="vendor/pdf.min.js"></script>
+  <script src="jarvis-audio.js?v=28.0"></script>
+  <script src="arc-reactor.js?v=28.0"></script>
+  <script src="app.js?v=28.0"></script>
+</body>
+</html>
