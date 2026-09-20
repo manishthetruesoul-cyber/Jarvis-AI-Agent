@@ -2041,7 +2041,7 @@ class JarvisApp {
       return 'http://localhost:3000/api/chat';
     }
     if (window.location.port === '3000' || (window.location.hostname && window.location.hostname.startsWith('3000-'))) {
-      return '/api/chat';
+      return 'https://jarvis-ai-agent-b7og.onrender.com/api/chat';
     }
     if (window.location.hostname && window.location.hostname.includes('.e2b.app')) {
       const sandboxHost = window.location.hostname.replace(/^[0-9]+-/, '');
@@ -2050,7 +2050,7 @@ class JarvisApp {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       return 'http://localhost:3000/api/chat';
     }
-    return '/api/chat';
+    return 'https://jarvis-ai-agent-b7og.onrender.com/api/chat';
   }
 
   async handleSubmit() {
