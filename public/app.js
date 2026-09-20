@@ -1773,7 +1773,7 @@ class JarvisApp {
   async syncDatabaseFile() {
     try {
       // 1. Fetch persistent database file from server
-      const res = await fetch('/api/memory');
+      const res = await fetch('https://jarvis-ai-agent-b7og.onrender.com/api/memory');
       if (res.ok) {
         const dbData = await res.json();
         if (Array.isArray(dbData.memories) && dbData.memories.length > 0) {
@@ -1796,7 +1796,7 @@ class JarvisApp {
       }
 
       // 2. Push current memories and session summary to server database file
-      await fetch('/api/memory', {
+      await fetch('https://jarvis-ai-agent-b7og.onrender.com/api/memory', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -2173,7 +2173,7 @@ Always formulate succinct, clear factual statements for MEMORY_ADD (e.g. <<<MEMO
       lastErr = err;
       // Fallback only if direct relative fails
       try {
-        const fallbackRes = await fetch('/api/chat', {
+        const fallbackRes = await fetch('https://jarvis-ai-agent-b7og.onrender.com/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
